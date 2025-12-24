@@ -48,7 +48,19 @@ class utilisateur extends connect
 
 
     public function setRole ($r){
-        $this->role= $r === 1 ? 'coach' : 'sportif';
+
+        if(isset($r)){
+            if($r==1){
+                $this->role = 'coach';
+            }
+            else{
+                $this->role = $r;
+            }
+        }
+        else {
+            $this->role = 'sportif';
+        }
+
     }
 
 

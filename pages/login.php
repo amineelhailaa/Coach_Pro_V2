@@ -17,7 +17,7 @@ if(!isset($_SESSION['id'])){
                     session_start();
                     $_SESSION['id'] = intval($check->getIdByEmail($_POST['email']));
                     $_SESSION['role'] = $result->getRole();
-                    header("location: " . $result->getRole() . "_dashboard.php");
+                    header("location: ".$result->getRole()."_dashboard.php");
                     exit();
                 }
                 else {

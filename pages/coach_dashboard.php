@@ -9,7 +9,20 @@ if (!isset($_SESSION['id'])) {
 if ($_SESSION['role'] != 'coach') {
     header("location: client-dashboard.php");
 }
+
 $id = $_SESSION['user_id'];
+try {
+    if($_SERVER['REQUEST_METHOD']==="POST"){
+        $con = new connect();
+        $pdo = $con->connecting();
+        $sql = new checker($pdo);
+        $coachName = $sql->getUserNameById($id);
+        $seance = new seance($coachName->getName(),$_POST['date_seance'],$_POST['start'],$_POST['duree'],'open');
+        $sql->createSeance($id,$seance);
+    }
+}catch (Throwable $ER){
+    echo $ER->getMessage();
+}
 
 
 //if ($_SERVER['REQUEST_METHOD'] == "POST") {
@@ -118,26 +131,32 @@ $id = $_SESSION['user_id'];
             <h2 class="text-xl font-bold mb-4">Add Availability</h2>
             <form id="addAvailabilityForm" method="POST" action="">
                 <div class="grid md:grid-cols-3 gap-4">
+<!--                    <div>-->
+<!--                        <label class="block font-medium mb-2">Day of Week</label>-->
+<!--                        <select name="week_day" required class="w-full px-3 py-2 border rounded-lg">-->
+<!--                            <option value="">Select day</option>-->
+<!--                            <option value="Mon">Monday</option>-->
+<!--                            <option value="Tue">Tuesday</option>-->
+<!--                            <option value="Wed">Wednesday</option>-->
+<!--                            <option value="Thu">Thursday</option>-->
+<!--                            <option value="Fri">Friday</option>-->
+<!--                            <option value="Sat">Saturday</option>-->
+<!--                            <option value="Sun">Sunday</option>-->
+<!--                        </select>-->
+<!--                    </div>-->
                     <div>
-                        <label class="block font-medium mb-2">Day of Week</label>
-                        <select name="week_day" required class="w-full px-3 py-2 border rounded-lg">
-                            <option value="">Select day</option>
-                            <option value="Mon">Monday</option>
-                            <option value="Tue">Tuesday</option>
-                            <option value="Wed">Wednesday</option>
-                            <option value="Thu">Thursday</option>
-                            <option value="Fri">Friday</option>
-                            <option value="Sat">Saturday</option>
-                            <option value="Sun">Sunday</option>
-                        </select>
+                        <label class="block font-medium mb-2">Date</label>
+                        <input type="date" name="date_seance" required class="w-full px-3 py-2 border rounded-lg">
                     </div>
+
                     <div>
                         <label class="block font-medium mb-2">Start Time</label>
-                        <input type="time" name="start_time" required class="w-full px-3 py-2 border rounded-lg">
+                        <input type="time" name="start" required class="w-full px-3 py-2 border rounded-lg">
                     </div>
+
                     <div>
-                        <label class="block font-medium mb-2">End Time</label>
-                        <input type="time" name="end_time" required class="w-full px-3 py-2 border rounded-lg">
+                        <label class="block font-medium mb-2">Duration</label>
+                        <input type="number" name="duree" required class="w-full px-3 py-2 border rounded-lg">
                     </div>
                 </div>
                 <!-- green button -->
@@ -159,7 +178,25 @@ $id = $_SESSION['user_id'];
                         <th class="px-4 py-3 text-left">Actions</th>
                     </tr>
                     </thead>
-                    <tbody id="availabilityTable"></tbody>
+                    <tbody id="availabilityTable">
+                    <?php
+                    $con = new connect();
+                    $pdo = $con->connecting();
+                    $forS = new checker($pdo);
+                    $seances = $forS->getSeances();
+                    foreach ($seances as $seance){
+                        ?>
+                        <tr class="border-b hover:bg-gray-50"><td class="px-4 py-3"><?= $seance->getDate() ?></td>
+                            <td class="px-4 py-3"><?= $seance->getHeure() ?></td>
+                            <td class="px-4 py-3"><?= $seance->getDuree() ?></td>
+                            <td class="px-4 py-3">
+                                <button onclick="editAvailability(${slot.id}, '${slot.day}', '${slot.start}', '${slot.end}')" class="text-green-600 hover:underline mr-3">Edit</button>
+                                <button onclick="deleteAvailability(${slot.id})" class="text-red-600 hover:underline">Delete</button>
+                            </td></tr>
+                    <?php
+                    }
+                    ?>
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -261,31 +298,36 @@ $id = $_SESSION['user_id'];
      class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-lg p-8 max-w-md w-full">
         <h3 class="text-2xl font-bold mb-4">Edit Availability</h3>
-        <form method="POST" action="/coach/availability/update.php">
+        <form method="POST" action="">
             <input type="hidden" name="availability_id" id="editAvailabilityId">
 
-            <div class="mb-4">
-                <label class="block font-medium mb-2">Day of Week</label>
-                <select name="week_day" id="editWeekDay" required class="w-full px-3 py-2 border rounded-lg">
-                    <option value="Mon">Monday</option>
-                    <option value="Tue">Tuesday</option>
-                    <option value="Wed">Wednesday</option>
-                    <option value="Thu">Thursday</option>
-                    <option value="Fri">Friday</option>
-                    <option value="Sat">Saturday</option>
-                    <option value="Sun">Sunday</option>
-                </select>
-            </div>
+<!--            <div class="mb-4">-->
+<!--                <label class="block font-medium mb-2">Day of Week</label>-->
+<!--                <select name="week_day" id="editWeekDay" required class="w-full px-3 py-2 border rounded-lg">-->
+<!--                    <option value="Mon">Monday</option>-->
+<!--                    <option value="Tue">Tuesday</option>-->
+<!--                    <option value="Wed">Wednesday</option>-->
+<!--                    <option value="Thu">Thursday</option>-->
+<!--                    <option value="Fri">Friday</option>-->
+<!--                    <option value="Sat">Saturday</option>-->
+<!--                    <option value="Sun">Sunday</option>-->
+<!--                </select>-->
+<!--            </div>-->
 
             <div class="mb-4">
+                <label class="block font-medium mb-2">date</label>
+                <input type="time" name="date_seance" id="editStartTime" required
+                       class="w-full px-3 py-2 border rounded-lg">
+            </div>
+            <div class="mb-4">
                 <label class="block font-medium mb-2">Start Time</label>
-                <input type="time" name="start_time" id="editStartTime" required
+                <input type="time" name="start" id="editStartTime" required
                        class="w-full px-3 py-2 border rounded-lg">
             </div>
 
             <div class="mb-4">
-                <label class="block font-medium mb-2">End Time</label>
-                <input type="time" name="end_time" id="editEndTime" required class="w-full px-3 py-2 border rounded-lg">
+                <label class="block font-medium mb-2">Duration</label>
+                <input type="time" name="duree" id="editEndTime" required class="w-full px-3 py-2 border rounded-lg">
             </div>
 
             <div class="flex gap-4">

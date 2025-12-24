@@ -60,4 +60,22 @@ class checker
 
     }
 
+
+    public function getSeances()
+    {
+        $query = "select * from seances";
+        $statement = $this->pdo->prepare($query);
+        $statement->execute();
+        $array=[];
+        while($row = $statement->fetch(2)){
+            $seance = new Seance($row['coach_id'],$row['date_seance'],$row['start'],$row['duree'],$row['status']);
+            $array[]=$seance;
+        }
+        return $array;
+
+    }
+
+
+
+
 }
