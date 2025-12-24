@@ -42,14 +42,14 @@ class checker
     public function createSeance(Seance $seance,$coach_id)
     {
         $this->seance =  $seance;
-        $statement= $this->pdo->prepare("insert into seance (coach_id,date_seance,start,duree,status) values (?,?,?,?,?)");
+        $statement= $this->pdo->prepare("insert into seances  (coach_id,date_seance,start,duree,status) values (?,?,?,?,?)");
         return $statement->execute(array($coach_id,$seance->getDate(),$seance->getHeure(),$seance->getDuree(),$seance->getStatus() ));
     }
 
 
     public function getUserNameById($id_coach)
     {
-        $query = "select * from users where id = ? ";
+        $query = "select * from users where user_id = ? ";
         $statement = $this->pdo->prepare($query);
         $statement->execute(array($id_coach));
         if($row=$statement->fetch(2)){

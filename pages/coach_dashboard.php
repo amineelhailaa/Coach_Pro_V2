@@ -2,23 +2,30 @@
 //ini_set('display_errors', 1);
 //ini_set('display_startup_errors', 1);
 //error_reporting(E_ALL);
+require_once  "../config/database.php";
+require_once  "../classes/checker.php";
+require_once  "../classes/seance.php";
+
+
 session_start();
 if (!isset($_SESSION['id'])) {
     header("location: login.php");
+    exit();
 }
 if ($_SESSION['role'] != 'coach') {
     header("location: client-dashboard.php");
+    exit();
 }
 
-$id = $_SESSION['user_id'];
+$id = $_SESSION['id'];
 try {
     if($_SERVER['REQUEST_METHOD']==="POST"){
         $con = new connect();
         $pdo = $con->connecting();
         $sql = new checker($pdo);
         $coachName = $sql->getUserNameById($id);
-        $seance = new seance($coachName->getName(),$_POST['date_seance'],$_POST['start'],$_POST['duree'],'open');
-        $sql->createSeance($id,$seance);
+        $seance = new Seance($coachName->getName(),$_POST['date_seance'],$_POST['start'],$_POST['duree'],'open');
+        $sql->createSeance($seance,$id);
     }
 }catch (Throwable $ER){
     echo $ER->getMessage();
@@ -174,7 +181,7 @@ try {
                     <tr>
                         <th class="px-4 py-3 text-left">Day</th>
                         <th class="px-4 py-3 text-left">Start Time</th>
-                        <th class="px-4 py-3 text-left">End Time</th>
+                        <th class="px-4 py-3 text-left">Duration</th>
                         <th class="px-4 py-3 text-left">Actions</th>
                     </tr>
                     </thead>
@@ -432,21 +439,21 @@ try {
     });
 
     // Render availability table - green links
-    const availabilityTable = document.getElementById('availabilityTable');
-    availabilitySlots.forEach(slot => {
-        const tr = document.createElement('tr');
-        tr.className = 'border-b hover:bg-gray-50';
-        tr.innerHTML = `
-                <td class="px-4 py-3">${slot.day}</td>
-                <td class="px-4 py-3">${slot.start}</td>
-                <td class="px-4 py-3">${slot.end}</td>
-                <td class="px-4 py-3">
-                    <button onclick="editAvailability(${slot.id}, '${slot.day}', '${slot.start}', '${slot.end}')" class="text-green-600 hover:underline mr-3">Edit</button>
-                    <button onclick="deleteAvailability(${slot.id})" class="text-red-600 hover:underline">Delete</button>
-                </td>
-            `;
-        availabilityTable.appendChild(tr);
-    });
+    // const availabilityTable = document.getElementById('availabilityTable');
+    // availabilitySlots.forEach(slot => {
+    //     const tr = document.createElement('tr');
+    //     tr.className = 'border-b hover:bg-gray-50';
+    //     tr.innerHTML = `
+    //             <td class="px-4 py-3">${slot.day}</td>
+    //             <td class="px-4 py-3">${slot.start}</td>
+    //             <td class="px-4 py-3">${slot.end}</td>
+    //             <td class="px-4 py-3">
+    //                 <button onclick="editAvailability(${slot.id}, '${slot.day}', '${slot.start}', '${slot.end}')" class="text-green-600 hover:underline mr-3">Edit</button>
+    //                 <button onclick="deleteAvailability(${slot.id})" class="text-red-600 hover:underline">Delete</button>
+    //             </td>
+    //         `;
+    //     availabilityTable.appendChild(tr);
+    // });
 
     // Render reviews
     const reviewsList = document.getElementById('reviewsList');
