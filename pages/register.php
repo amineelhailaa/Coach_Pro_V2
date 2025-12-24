@@ -2,12 +2,22 @@
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+session_start();
 
-if($_SERVER['REQUEST_METHOD']==="POST") {
-    require_once "../config/signUp.php";
+if(!isset($_SESSION['id'])){
+
+    if($_SERVER['REQUEST_METHOD']==="POST") {
+        require_once "../config/signUp.php";
+        header("location: login.php");
+    }
+}
+else {
+    header("location: ".$_SESSION['role']."_dashboard.php");
 }
 
 
+
+//redirect to login page
 
 
 

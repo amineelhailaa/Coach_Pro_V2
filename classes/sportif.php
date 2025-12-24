@@ -5,13 +5,11 @@ class sportif extends utilisateur {
     protected $status;
     public function __construct($nom, $phone, $role, $mail,$status){
         parent::__construct( $nom, $phone, $role, $mail);
-        $this->email = $mail;
-        $this->nom = $nom;
-        $this->phone = $phone;
-        $this->role = $role;
+//        $this->email = $mail;
+//        $this->nom = $nom;
+//        $this->phone = $phone;
+//        $this->role = $role;
         $this->status = $this->checkStatus($status);
-
-
     }
 
 
@@ -40,6 +38,6 @@ class sportif extends utilisateur {
         $user_id = $this->signMe();
         $stmt = $this->connecting()->prepare("insert into sportifs (sportif_id,status) values (?,?)");
 //       $stmt->bindpar("sssss",$this->nom,$this->email,$this->password,$this->phone,$this->role);
-        $stmt->execute(array($user_id,$this->status));
+        return $stmt->execute(array($user_id,$this->status));
     }
 }

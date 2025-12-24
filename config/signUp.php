@@ -10,7 +10,7 @@ $nom = $_POST['nom'];
 $email = $_POST['email'];
 $password = $_POST['password'];
 $phone = $_POST['phone'];
-$role = $_POST['role'];
+$role = intval($_POST['role']);
 $discipline = $_POST['sport'];
 $description = $_POST['bio'];
 $exp = $_POST['exp'];
@@ -22,6 +22,7 @@ if ($role) {
     $user->setPassword($password);
     $user->signMeCoach();
 } else {
+    $role = 0;
     $user = new sportif($nom, $phone, $role, $email, $status);
     $user->setPassword($password);
     $user->signMeSportif();

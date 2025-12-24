@@ -26,6 +26,11 @@ class utilisateur extends connect
         $this->password = password_hash($pw,PASSWORD_DEFAULT);
     }
 
+    public function setPasswordText($pw)
+    {
+        $this->password = $pw;
+    }
+
     public function setName($n)
     {
         $this->nom = $n;
@@ -43,7 +48,7 @@ class utilisateur extends connect
 
 
     public function setRole ($r){
-        $this->role= $r == 1 ? 'coach' : 'sportif';
+        $this->role= $r === 1 ? 'coach' : 'sportif';
     }
 
 
@@ -80,7 +85,5 @@ class utilisateur extends connect
          $stmt->execute(array($this->nom,$this->email,$this->password,$this->phone,$this->role));
         return $con->lastInsertId();
     }
-
-
 
 }
