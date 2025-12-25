@@ -61,9 +61,9 @@ class checker
     }
 
 
-    public function getSeances()
+    public function getSeances($id) //need to show seances per coach not all seances mate ????
     {
-        $query = "select * from seances";
+        $query = "select * from seances where coach_id=$id";
         $statement = $this->pdo->prepare($query);
         $statement->execute();
         $array=[];

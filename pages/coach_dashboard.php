@@ -190,7 +190,7 @@ try {
                     $con = new connect();
                     $pdo = $con->connecting();
                     $forS = new checker($pdo);
-                    $seances = $forS->getSeances();
+                    $seances = $forS->getSeances($_SESSION['id']);
                     foreach ($seances as $seance){
                         ?>
                         <tr class="border-b hover:bg-gray-50"><td class="px-4 py-3"><?= $seance->getDate() ?></td>
