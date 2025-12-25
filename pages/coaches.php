@@ -1,8 +1,19 @@
 <?php
 session_start();
-if(!isset($_SESSION['id']) || $_SESSION['role'] !='sportif'){
+//if(!isset($_SESSION['id']) || $_SESSION['role'] !='sportif'){
+//    header("location: login.php");
+//}
+
+
+require_once "../classes/checker.php";
+require_once "../classes/coach.php";
+require_once "../config/database.php";
+
+
+if(!isset($_SESSION['id'])){
     header("location: login.php");
 }
+
 
 
 
@@ -90,21 +101,21 @@ if(!isset($_SESSION['id']) || $_SESSION['role'] !='sportif'){
                 <!-- Coach 1 -->
                 <div class="bg-white p-6 rounded-lg shadow hover:shadow-lg transition">
                     <img src="/placeholder.svg?height=200&width=200"
-                         alt="John Smith"
+                         alt="image"
                          class="w-full h-48 object-cover rounded-lg mb-4">
 
-                    <h3 class="text-xl font-bold mb-2"><?= $coach->getName  ?></h3>
+                    <h3 class="text-xl font-bold mb-2"><?= $coach->getName()  ?></h3>
 
                     <div class="flex flex-wrap gap-2 mb-2">
-                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm"><?= $coach->getName  ?></span>
+                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm"><?= $coach->getName()  ?></span>
                     </div>
 
-                    <p class="text-gray-600 mb-2"><?= $coach->getExp  ?>• ⭐ 4.8</p>
+                    <p class="text-gray-600 mb-2"><?= $coach->getExp()  ?> ans d'experience• ⭐ 4.8</p>
                     <p class="text-gray-500 text-sm mb-4">
                         <?= $coach->getBio  ?>
                     </p>
 
-                    <a href="coach_profile.php?id=<?= $coach->getId ?>"
+                    <a href="coach_profile.php?id=<?= $coach->getId() ?>"
                        class="block text-center bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
                         View Profile
                     </a>
