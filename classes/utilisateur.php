@@ -47,21 +47,17 @@ class utilisateur extends connect
     }
 
 
-    public function setRole ($r){
-
-        if(isset($r)){
-            if($r==1){
-                $this->role = 'coach';
-            }
-            else{
-                $this->role = $r;
-            }
-        }
-        else {
+    public function setRole($r = null)
+    {
+        if ($r === 1) {
+            $this->role = 'coach';
+        } elseif (is_string($r) && $r !== '') {
+            $this->role = $r;
+        } else {
             $this->role = 'sportif';
         }
-
     }
+
 
 
     //for getting and accessing.
