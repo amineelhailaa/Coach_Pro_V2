@@ -3,6 +3,7 @@
 require_once __DIR__ . "/utilisateur.php";
 class coach extends utilisateur
 {
+    protected $id;
     protected $discipline;
     protected $experience;
     protected $description;
@@ -14,6 +15,15 @@ class coach extends utilisateur
         $this->discipline = $discipline;
         $this->experience = $exp;
         $this->description = $description;
+    }
+
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+    public function getID()
+    {
+        return $this->id;
     }
 
 

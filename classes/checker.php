@@ -74,8 +74,17 @@ class checker
         return $array;
 
     }
-
-
-
-
+    public function getAllCoaches()
+    {
+        $query = "select * from coaches inner join users on coaches.coach_id = users.user_id";
+        $statement = $this->pdo->prepare($query);
+        $statement->execute();
+        $array=[];
+        while($row = $statement->fetch(2)){
+            $coach = new coach($row['discipline'],$row['exp_years'],$row['bio'],$row['email'],$row['nom'],$row['phone'],$row['role']);
+            $coach->setId(intval($row['coach_id']));
+            $array[]= $coach;
+        }
+        return $array;
+    }
 }
