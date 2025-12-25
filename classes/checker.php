@@ -46,6 +46,23 @@ class checker
         return $statement->execute(array($coach_id,$seance->getDate(),$seance->getHeure(),$seance->getDuree(),$seance->getStatus() ));
     }
 
+    public function upcomingSession($userId)
+    {
+        $query = "select count(*) from users u  inner join reservation r on u.user_id=r.id where u.user_id=? and  r.date_reserved > current_date ";
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute(array($userId));
+        $row = $stmt->fetch(2);
+        return $row['count(*)'];
+    }
+    public function doneSession($userId)
+    {
+        $query = "select count(*) from users u  inner join reservation r on u.user_id=r.id where u.user_id=? and  r.date_reserved < current_date ";
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute(array($userId));
+        $row = $stmt->fetch(2);
+        return $row['count(*)'];
+    }
+
 
     public function getUserNameById($id_coach)
     {
@@ -53,7 +70,7 @@ class checker
         $statement = $this->pdo->prepare($query);
         $statement->execute(array($id_coach));
         if($row=$statement->fetch(2)){
-           return new utilisateur($row['nom'],null,null,null);
+           return new utilisateur($row['nom'],$row['phone'],$row['role'],$row['email']);
     } else{
             return false;
         }

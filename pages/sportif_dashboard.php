@@ -5,6 +5,14 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+
+require_once "../config/database.php";
+require_once "../classes/seance.php";
+require_once "../classes/coach.php";
+require_once "../classes/checker.php";
+
+
+
 if(!isset($_SESSION['id'])){
     header("location: login.php");
     exit();
@@ -41,30 +49,37 @@ if($_SESSION['role']!='sportif'){
         </div>
     </div>
 </nav>
+<?php
 
+$con = new connect();
+$pdo = $con->connecting();
+$sql = new checker($pdo);
+$user = $sql->getUserNameById($_SESSION['id']);
+
+?>
 <div class="max-w-7xl mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-8">Client Dashboard</h1>
+    <h1 class="text-3xl font-bold mb-8">Sportif Dashboard</h1>
 
     <div class="grid md:grid-cols-2 gap-6">
 
         <!-- Profile Section -->
         <div class="bg-white p-6 rounded-lg shadow">
             <h2 class="text-2xl font-bold mb-4">My Profile</h2>
-            <form method="POST" action="/client/update-profile.php">
+            <form method="POST" action="">
                 <div class="space-y-4">
                     <div>
                         <label class="block font-medium mb-1">Name</label>
-                        <input type="text" name="nom" value="<?php echo $row['nom']?>" class="w-full px-3 py-2 border rounded-lg">
+                        <input type="text" name="nom" value="<?= $user->getName() ?>" class="w-full px-3 py-2 border rounded-lg">
                     </div>
 
                     <div>
                         <label class="block font-medium mb-1">Email</label>
-                        <input type="email" name="email" value="<?php echo $row['email']?>" disabled class="w-full px-3 py-2 border rounded-lg bg-gray-100">
+                        <input type="email" name="email" value="<?= $user->getEmail() ?>" disabled class="w-full px-3 py-2 border rounded-lg bg-gray-100">
                     </div>
 
                     <div>
                         <label class="block font-medium mb-1">Phone</label>
-                        <input type="tel" name="phone" value="<?php echo $row['phone']?>" class="w-full px-3 py-2 border rounded-lg">
+                        <input type="tel" name="phone" value="<?= $user->getPhone() ?>" class="w-full px-3 py-2 border rounded-lg">
                     </div>
 
                     <!-- green button -->
@@ -79,11 +94,11 @@ if($_SESSION['role']!='sportif'){
             <div class="space-y-4">
                 <div class="flex justify-between items-center p-4 bg-green-50 rounded-lg">
                     <span class="font-medium">Upcoming Sessions</span>
-                    <span class="text-2xl font-bold text-green-600">3</span>
+                    <span class="text-2xl font-bold text-green-600"><?= $sql->upcomingSession($_SESSION['id']) ?></span>
                 </div>
                 <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
                     <span class="font-medium">Completed Sessions</span>
-                    <span class="text-2xl font-bold text-gray-600">12</span>
+                    <span class="text-2xl font-bold text-gray-600"><?= $sql->doneSession($_SESSION['id']) ?></span>
                 </div>
                 <div class="flex justify-between items-center p-4 bg-yellow-50 rounded-lg">
                     <span class="font-medium">Pending Reviews</span>

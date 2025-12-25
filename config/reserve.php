@@ -23,6 +23,10 @@ try{
         $sql->createReservation($coach_id,$user_id,$seance_id);
         header("location: ../pages/sportif_dashboard.php");
     }
+    else{
+        header("location: ../pages/coach_profile.php");
+    }
+    exit();
 
 }catch (Throwable $e){
     echo $e->getMessage();
