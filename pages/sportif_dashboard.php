@@ -9,7 +9,7 @@ if(!isset($_SESSION['id'])){
     header("location: login.php");
     exit();
 }
-if($_SESSION['role']!='client'){
+if($_SESSION['role']!='sportif'){
     header("location: coach-dashboard.php");
     exit();
 }
