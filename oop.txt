@@ -1,0 +1,59 @@
+introduction a la programmation orientee objet et PHP:
+
+POURQUOI UTLISER L'OOP EN PHP :
+parceque :
+	ca evite la redodance du code ( spagetty code )
+	permet de definir les erreur probales et les fixes simplement 
+	facilite le developpement du code
+	
+	
+	
+	
+CLASS
+DEFINITION D'UNE CLASSE :
+une classe est un type de donnes regroupe des attributs et des methodes qu on peut l'acceder a partir d'un instance de cette classe .
+
+
+
+pour cree une classe on  le declarer par
+class classname {
+
+	}
+	
+un classe peut contient
+	des attributs : variables avec 
+		public : cad un variable accessible partout
+		private : cad on peut pas l'acceder a l'exterieur de la classe
+		protected : cad accessible seulement par la classe meme et les classes qui herti ceci.
+		
+	des methods : ce sont des fonctions 
+		
+		
+un objet represente une entite qui est un instance d'une classe , cad quon definer une classe on na encore pas reserve la memoire mais qu on l'initialiser a un variable cela est un objet
+
+
+
+__constructor : function run when we initialise  un objet and used to pass parameter too .
+cqs d'heritage php n'appel pas constructor du parent si lenfant defini le sien.
+__destructor : function run when we destory a variable .
+
+getter , to get data with a snicky way without constructor .
+setter , to set data on a private variables .
+
+
+
+
+encapsulation : cest le fait de controler l'access aux  proprietes d'une classe 
+par exemple on doit toujours met les attributs et les fonctions private par default , 
+apres on va voir si on est besoin de les changer ( cas d'heritage par ex. => protected )
+le fait de mettre les attributs private ca veut dire pas qu'on peut pas les modifier 
+ms on peut faire ca a travers les getters et setters d'une maniere securesee.
+
+
+
+
+polymorphisme c le fait d'utiliser une seul method par ex et chaque objet soit avec un instance ou un classe parent va le faire de sa maniere defini 
+c pour eviter les conditions et ajouter des nouveaux types sans changer le code existant 
+
+l'heritage cest le fait dheriter les proprietes de la classe pere pour eviter la repetition 
+
