@@ -2,6 +2,7 @@
 
 require_once __DIR__ . "/utilisateur.php"; //dir means when another file require this class ( checker ) it will access it with the path relatif to checker file not to the file usin checker class
 require_once __DIR__."/reservation.php";
+require_once __DIR__."/coach.php";
 
 class checker
 {
@@ -79,6 +80,8 @@ class checker
     }
 
 
+
+
     public function getCoachById($id_coach)
     {
         $query = "select * from coaches c inner join users u on c.coach_id = u.user_id where user_id = ? ";
@@ -90,6 +93,13 @@ class checker
             return false;
         }
 
+    }
+
+    public function updateCoach(coach $coach)
+    {
+        $query = "update coaches set discipline=? , exp_years=? , bio=? where coach_id=?";
+        $stmt = $this->pdo->prepare($query);
+        return $stmt->execute(array($coach->getDiscipline(),$coach->getExp(),$coach->getDescription(),$coach->getID()));
     }
 
 
@@ -241,4 +251,6 @@ class checker
 //$con = new connect();
 //$pdo = $con->connecting();
 //$sql = new checker($pdo);
+//$coa = $sql->getCoachById(19);
+//echo $coa->getName();
 //echo $sql->getReservationCount(19)['count(*)'];

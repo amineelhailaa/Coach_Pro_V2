@@ -18,11 +18,11 @@ if ($_SESSION['role'] != 'coach') {
 }
 
 $id = $_SESSION['id'];
+$con = new connect();
+$pdo = $con->connecting();
+$sql = new checker($pdo);
 try {
     if($_SERVER['REQUEST_METHOD']==="POST"){
-        $con = new connect();
-        $pdo = $con->connecting();
-        $sql = new checker($pdo);
         if(isset($_POST['start'])){
 
             $coachName = $sql->getUserNameById($id);
@@ -38,6 +38,14 @@ try {
             }
             elseif ($_POST['action']=="decline"){
                 $sql->updateReservationStatus('declined',$seanceID);
+            }
+            elseif ($_POST['action']=='update'){
+                $cooach = $sql->getCoachById($_SESSION['id']);
+                $cooach->setId($_SESSION['id']);
+                $cooach->setDiscipline($_POST['sport']);
+                $cooach->setDescription($_POST['bio']);
+                $cooach->setExp($_POST['exp_years']);
+                $sql->updateCoach($cooach);
             }
         }
 
@@ -289,80 +297,87 @@ try {
     </div>
 
     <!-- Profile Tab -->
+    <?php
+
+
+    $coach = $sql->getCoachById($_SESSION['id'])
+
+
+    ?>
     <div id="profileTab" class="tab-content hidden">
         <div class="bg-white p-6 rounded-lg shadow mb-6">
             <h2 class="text-xl font-bold mb-4">Edit Profile</h2>
-            <form method="POST" action="/coach/update-profile.php">
+            <form method="POST" action="">
+                <input type="hidden" name="action" value="update">
                 <div class="space-y-4">
                     <div>
                         <label class="block font-medium mb-2">Bio</label>
-                        <textarea name="bio" rows="4" maxlength="500" class="w-full px-3 py-2 border rounded-lg">Professional coach with international experience</textarea>
+                        <textarea name="bio" rows="4" maxlength="500" class="w-full px-3 py-2 border rounded-lg"><?= $coach->getDescription() ?></textarea>
                     </div>
 
-                    <div>
-                        <label class="block font-medium mb-2">Level</label>
-                        <select name="niveau" class="w-full px-3 py-2 border rounded-lg">
-                            <option value="Beginner">Beginner</option>
-                            <option value="Intermediate">Intermediate</option>
-                            <option value="Advanced">Advanced</option>
-                            <option value="Pro" selected>Pro</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block font-medium mb-2">Profile Picture URL</label>
-                        <input type="text" name="pic_url" class="w-full px-3 py-2 border rounded-lg">
-                    </div>
+<!--                    <div>-->
+<!--                        <label class="block font-medium mb-2">Level</label>-->
+<!--                        <select name="niveau" class="w-full px-3 py-2 border rounded-lg">-->
+<!--                            <option value="Beginner">Beginner</option>-->
+<!--                            <option value="Intermediate">Intermediate</option>-->
+<!--                            <option value="Advanced">Advanced</option>-->
+<!--                            <option value="Pro" selected>Pro</option>-->
+<!--                        </select>-->
+<!--                    </div>-->
+<!---->
+<!--                    <div>-->
+<!--                        <label class="block font-medium mb-2">Profile Picture URL</label>-->
+<!--                        <input type="text" name="pic_url" class="w-full px-3 py-2 border rounded-lg">-->
+<!--                    </div>-->
 
                     <div>
                         <label class="block font-medium mb-2">Years of Experience</label>
-                        <input type="number" name="exp_years" value="10" min="0"
+                        <input type="number" name="exp_years" value="<?= $coach->getExp() ?>" min="0"
                                class="w-full px-3 py-2 border rounded-lg">
                     </div>
 
                     <div>
                         <label class="block font-medium mb-2">Sports</label>
                         <div class="space-y-2">
-                            <label class="flex items-center"><input type="checkbox" name="sports[]" value="1" checked
-                                                                    class="mr-2"> Football</label>
-                            <label class="flex items-center"><input type="checkbox" name="sports[]" value="2" checked
-                                                                    class="mr-2"> Basketball</label>
-                            <label class="flex items-center"><input type="checkbox" name="sports[]" value="3"
-                                                                    class="mr-2"> Tennis</label>
-                            <label class="flex items-center"><input type="checkbox" name="sports[]" value="4"
-                                                                    class="mr-2"> Swimming</label>
+                            <select name="sport" class="w-full px-3 py-2 border rounded-lg">
+                                <option value="">Sélectionner un Sport</option>
+                                <option value="Football">Football</option>
+                                <option value="Yoga">Yoga</option>
+                                <option value="Hand Ball">Hand Ball</option>
+                                <option value="Basketball">Basketball</option>
+                            </select>
                         </div>
                     </div>
 
                     <!-- Certifications -->
-                    <div>
-                        <label class="block font-medium mb-2">Certifications</label>
-                        <div id="certificationsContainer" class="space-y-2 mb-2">
-                            <div class="flex gap-2 certification-row">
-                                <input type="text" name="certifications_title[]" placeholder="Intitulé"
-                                       value="UEFA Pro License" class="flex-1 px-3 py-2 border rounded-lg">
-                                <input type="text" name="certifications_powered_by[]" placeholder="Organisme"
-                                       value="UEFA" class="flex-1 px-3 py-2 border rounded-lg">
-                                <button type="button" onclick="removeCertificationRow(this)"
-                                        class="px-3 py-2 bg-red-500 text-white rounded-lg">Remove
-                                </button>
-                            </div>
-                            <div class="flex gap-2 certification-row">
-                                <input type="text" name="certifications_title[]" placeholder="Intitulé"
-                                       value="Sports Science Diploma" class="flex-1 px-3 py-2 border rounded-lg">
-                                <input type="text" name="certifications_powered_by[]" placeholder="Organisme"
-                                       value="University of Sports" class="flex-1 px-3 py-2 border rounded-lg">
-                                <button type="button" onclick="removeCertificationRow(this)"
-                                        class="px-3 py-2 bg-red-500 text-white rounded-lg">Remove
-                                </button>
-                            </div>
-                        </div>
-                        <button type="button" onclick="addCertificationRow()"
-                                class="px-4 py-2 bg-green-500 text-white rounded-lg">Add Certification
-                        </button>
-                    </div>
+<!--                    <div>-->
+<!--                        <label class="block font-medium mb-2">Certifications</label>-->
+<!--                        <div id="certificationsContainer" class="space-y-2 mb-2">-->
+<!--                            <div class="flex gap-2 certification-row">-->
+<!--                                <input type="text" name="certifications_title[]" placeholder="Intitulé"-->
+<!--                                       value="UEFA Pro License" class="flex-1 px-3 py-2 border rounded-lg">-->
+<!--                                <input type="text" name="certifications_powered_by[]" placeholder="Organisme"-->
+<!--                                       value="UEFA" class="flex-1 px-3 py-2 border rounded-lg">-->
+<!--                                <button type="button" onclick="removeCertificationRow(this)"-->
+<!--                                        class="px-3 py-2 bg-red-500 text-white rounded-lg">Remove-->
+<!--                                </button>-->
+<!--                            </div>-->
+<!--                            <div class="flex gap-2 certification-row">-->
+<!--                                <input type="text" name="certifications_title[]" placeholder="Intitulé"-->
+<!--                                       value="Sports Science Diploma" class="flex-1 px-3 py-2 border rounded-lg">-->
+<!--                                <input type="text" name="certifications_powered_by[]" placeholder="Organisme"-->
+<!--                                       value="University of Sports" class="flex-1 px-3 py-2 border rounded-lg">-->
+<!--                                <button type="button" onclick="removeCertificationRow(this)"-->
+<!--                                        class="px-3 py-2 bg-red-500 text-white rounded-lg">Remove-->
+<!--                                </button>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <button type="button" onclick="addCertificationRow()"-->
+<!--                                class="px-4 py-2 bg-green-500 text-white rounded-lg">Add Certification-->
+<!--                        </button>-->
+<!--                    </div>-->
 
-                    <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700">Update
+                    <button type="submit"  class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700">Update
                         Profile
                     </button>
                 </div>
