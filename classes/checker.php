@@ -46,6 +46,23 @@ class checker
         return $statement->execute(array($coach_id,$seance->getDate(),$seance->getHeure(),$seance->getDuree(),$seance->getStatus() ));
     }
 
+    public function upcomingSession($userId)
+    {
+        $query = "select count(*) from users u  inner join reservation r on u.user_id=r.id where u.user_id=? and  r.date_reserved > current_date ";
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute(array($userId));
+        $row = $stmt->fetch(2);
+        return $row['count(*)'];
+    }
+    public function doneSession($userId)
+    {
+        $query = "select count(*) from users u  inner join reservation r on u.user_id=r.id where u.user_id=? and  r.date_reserved < current_date ";
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute(array($userId));
+        $row = $stmt->fetch(2);
+        return $row['count(*)'];
+    }
+
 
     public function getUserNameById($id_coach)
     {
@@ -53,8 +70,22 @@ class checker
         $statement = $this->pdo->prepare($query);
         $statement->execute(array($id_coach));
         if($row=$statement->fetch(2)){
-           return new utilisateur($row['nom'],null,null,null);
+           return new utilisateur($row['nom'],$row['phone'],$row['role'],$row['email']);
     } else{
+            return false;
+        }
+
+    }
+
+
+    public function getCoachById($id_coach)
+    {
+        $query = "select * from coaches c inner join users u on c.coach_id = u.user_id where user_id = ? ";
+        $statement = $this->pdo->prepare($query);
+        $statement->execute(array($id_coach));
+        if($row=$statement->fetch(2)){
+            return new coach($row['discipline'],$row['exp_years'],$row['bio'],$row['email'],$row['nom'],$row['phone'],$row['role']);
+        } else{
             return false;
         }
 
@@ -74,6 +105,48 @@ class checker
         return $array;
 
     }
+    public function getSeanceById($id) //id of the seance
+    {
+        $query = "select * from seances where id=?";
+        $statement = $this->pdo->prepare($query);
+        $statement->execute(array($id));
+        $row = $statement->fetch(2);
+        $seance = new Seance($row['coach_id'],$row['date_seance'],$row['start'],$row['duree'],$row['status']);
+        return $seance;
+    }
+    public function updateSeanceStatus($id,$status)
+    {
+        $query = "update seances set status=? where id=?";
+        $statement = $this->pdo->prepare($query);
+        return $statement->execute(array($status,$id));
+    }
+    public function createReservation($coach_id,$user_id,$seance_id)
+    {
+        $statement= $this->pdo->prepare("insert into reservation  (coach_id,sportif_id,seance_id,status) values (?,?,?,?)");
+        $statement->execute(array($coach_id,$user_id,$seance_id,"in progress"));
+
+    }
+
+
+    public function getSeancesByStatut($id,$status): array //need to show seances per coach not all seances mate ????
+    {
+        $query = "select * from seances where coach_id=? and status=? ";
+        $statement = $this->pdo->prepare($query);
+        $statement->execute(array($id,$status));
+        $array=[];
+        while($row = $statement->fetch(2)){
+            $seance = new Seance($row['coach_id'],$row['date_seance'],$row['start'],$row['duree'],$row['status']);
+            $seance->setId($row['id']);
+            $array[]=$seance;
+        }
+        return $array;
+
+    }
+
+
+
+
+
     public function getAllCoaches()
     {
         $query = "select * from coaches inner join users on coaches.coach_id = users.user_id";

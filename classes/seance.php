@@ -3,6 +3,7 @@
 
 
 class Seance{
+    private $id;
     private $coachName;
     private $date;
     private $heure;
@@ -23,6 +24,16 @@ class Seance{
     {
         return $this->coachName;
     }
+    public function getId()
+    {
+        return $this->id;
+    }
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+
 
     public function getDate()
     {

@@ -1,6 +1,6 @@
 <?php
-//error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
-//ini_set('display_errors', 1);
+error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
+ini_set('display_errors', 1);
 
 //session_start();
 //require_once "./config/db.php";
@@ -16,24 +16,32 @@
 //    $statement->execute();
 //}
 
-try {
-    if($_SERVER['REQUEST_METHOD']==='GET') {
+    require_once "../config/database.php";
+    require_once "../classes/seance.php";
+    require_once "../classes/coach.php";
+    require_once "../classes/checker.php";
+
+
+    if(isset($_GET['id'])) {
         $id = $_GET['id'];
         $con = new connect();
         $pdo = $con->connecting();
         $repo = new checker($pdo);
-        $array = $repo->getSeances($id); //array of seances of that coach
+        $array = $repo->getSeancesByStatut($id,"open");
+        $coach= $repo->getCoachById($id);
 
+        //array of seances of that coach
 
+        if($_SERVER['REQUEST_METHOD']==="POST"){
+
+        }
     }
+
+
     else {
         header("/pages/login.php");
         exit();
     }
-
-}catch (Throwable $err){
-    echo $err->getMessage();
-}
 
 
 
@@ -42,50 +50,35 @@ try {
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coach Profile - CoachPro</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
 <body class="bg-gray-50">
-    <!-- Navigation -->
-    <nav class="bg-white shadow">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-            <!-- Logo links to index.php, green theme -->
-            <a href="index.php" class="text-2xl font-bold text-green-600">CoachPro</a>
-            <div class="hidden md:flex gap-6">
-                <a href="index.php" class="hover:text-green-600">Home</a>
-                <a href="coaches.php" class="hover:text-green-600">Find Coaches</a>
-                <!-- Link to login.php -->
-                <a href="login.php" class="hover:text-green-600">Login</a>
-            </div>
+<!-- Navigation -->
+<nav class="bg-white shadow">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+        <!-- Logo links to index.php, green theme -->
+        <a href="index.php" class="text-2xl font-bold text-green-600">CoachPro</a>
+        <div class="hidden md:flex gap-6">
+            <a href="index.php" class="hover:text-green-600">Home</a>
+            <a href="coaches.php" class="hover:text-green-600">Find Coaches</a>
+            <!-- Link to login.php -->
+            <a href="login.php" class="hover:text-green-600">Login</a>
         </div>
-    </nav>
-
-    <div class="max-w-5xl mx-auto px-4 py-8">
-        <!-- Coach Header -->
-        <?php
-
-
-
+    </div>
+</nav>
+<div class="max-w-5xl mx-auto px-4 py-8">
+    <!-- Coach Header -->
+    <?php
+    if(isset($coach)){
         ?>
         <div class="bg-white p-8 rounded-lg shadow mb-6">
             <div class="flex flex-col md:flex-row gap-6">
-                <img id="coachPhoto" src="/placeholder.svg?height=200&width=200" alt="Coach" class="w-48 h-48 rounded-lg object-cover">
+                <img id="coachPhoto" src="https://www.yardbarker.com/college_football/articles/michigan_coach_mike_harts_status_gets_long_awaited_update/s1_13132_39998457" alt="Coach Picture" class="w-48 h-48 rounded-lg object-cover">
                 <div class="flex-1">
-                    <h1 id="coachName" class="text-3xl font-bold mb-2">coach name</h1>
-                    <div id="coachSports" class="flex flex-wrap gap-2 mb-4">asdfasdf</div>
-                    <p id="coachBio" class="text-gray-700">asdfasdf</p>
+                    <h1 id="coachName" class="text-3xl font-bold mb-2"><?= $coach->getName() ?></h1>
+                    <div id="coachSports" class="flex flex-wrap gap-2 mb-4"><?= $coach->getDiscipline() ?></div>
+                    <p id="coachBio" class="text-gray-700"><?= $coach->getDescription() ?></p>
                 </div>
             </div>
         </div>
-
-        SELECT FORMAT(SaleDate, 'dddd') AS DayOfWeek,
-        SUM(QuantitySold) AS TotalQuantitySold
-        FROM #TempProductSales
-        GROUP BY FORMAT(SaleDate, 'dddd');
-
 
         <div class="bg-white p-8 rounded-lg shadow mb-6">
             <h2 class="text-2xl font-bold mb-4">Availability</h2>
@@ -93,145 +86,151 @@ try {
             <div class="space-y-4">
 
                 <div>
-                    <h3 class="font-semibold mb-2">Monday</h3>
                     <div class="flex gap-2">
+                        <?php
+
+                        foreach ($array as $seance):
+                        ?>
                         <button class="slot px-4 py-2 border rounded-lg hover:bg-green-100"
-                                data-day="Monday"
-                                data-time="09:00 – 10:00">
-                            09:00 – 10:00
+                                data-day="<?= $seance->getDate()?>"
+                                data-id="<?= $seance->getId() ?>"
+                                data-time="<?= $seance->getHeure() ?>">
+                            <?="on ".$seance->getDate()." at ".$seance->getHeure()?>
                         </button>
 
-                        <button class="slot px-4 py-2 border rounded-lg hover:bg-green-100"
-                                data-day="Monday"
-                                data-time="10:00 – 11:00">
-                            10:00 – 11:00
-                        </button>
+                        <?php
+                        endforeach;
+                        ?>
+
                     </div>
                 </div>
 
-                <div>
-                    <h3 class="font-semibold mb-2">Wednesday</h3>
-                    <div class="flex gap-2">
-                        <button class="slot px-4 py-2 border rounded-lg hover:bg-green-100"
-                                data-day="Wednesday"
-                                data-time="14:00 – 15:00">
-                            14:00 – 15:00
-                        </button>
-                    </div>
-                </div>
+        </div>
+</div>
+<?php
+}
+?>
 
-            </div>
+
+
+<!-- Modal -->
+<div id="bookingModal"
+     class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+
+    <div class="bg-white rounded-lg p-6 max-w-md w-full">
+        <h3 class="text-xl font-bold mb-4">Confirm Reservation</h3>
+
+        <p class="mb-4 text-gray-700">
+            You are about to book on:
+            <br>
+            <strong id="modalSlotText"></strong>
+        </p>
+
+        <div class="flex gap-4">
+
+            <form method="POST" class="flex-1 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 text-center">
+            <button class="flex-1 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700">
+                <a id="submitIt" href="">
+                    Confirm
+                </a>
+            </button></form>
+
+            <button id="closeModal"
+                    class="flex-1 bg-gray-300 py-2 rounded-lg hover:bg-gray-400">
+                Cancel
+            </button>
         </div>
     </div>
+</div>
 
-    <!-- Modal -->
-    <div id="bookingModal"
-         class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+<script>
+    /* =========================
+       MODAL BEHAVIOR ONLY
+    ========================= */
 
-        <div class="bg-white rounded-lg p-6 max-w-md w-full">
-            <h3 class="text-xl font-bold mb-4">Confirm Reservation</h3>
+    const modal = document.getElementById('bookingModal');
+    const modalText = document.getElementById('modalSlotText');
+    const closeBtn = document.getElementById('closeModal');
+const submitReservation = document.getElementById("submitIt");
+    document.querySelectorAll('.slot').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const day = btn.dataset.day;
+            const time = btn.dataset.time;
+            submitReservation.href = `../config/reserve.php?user=<?= $id ?>&coach=<?= $_GET['id']?>&seance=${btn.dataset.id}`
+            modalText.textContent = `${day} • ${time}`;
+            modal.classList.remove('hidden');
+        });
+    });
 
-            <p class="mb-4 text-gray-700">
-                You are about to book:
-                <br>
-                <strong id="modalSlotText"></strong>
-            </p>
+    closeBtn.addEventListener('click', () => {
+        modal.classList.add('hidden');
+    });
+
+    // Optional: click outside modal closes it
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.add('hidden');
+        }
+    });
+</script>
+
+<!-- Review submission modal -->
+<div id="reviewSubmitModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg p-8 max-w-md w-full">
+        <h3 class="text-2xl font-bold mb-4">Leave a Review</h3>
+        <form method="POST" action="/avis/create.php">
+            <input type="hidden" name="coach_id" id="reviewCoachId">
+            <input type="hidden" name="reservation_id" value="">
+
+            <div class="mb-4">
+                <label class="block font-medium mb-2">Your Review (max 90 characters)</label>
+                <textarea name="avis" maxlength="90" rows="3" required class="w-full px-3 py-2 border rounded-lg"></textarea>
+                <div class="text-sm text-gray-500 mt-1">Character count: <span id="reviewCharCount">0</span>/90</div>
+            </div>
 
             <div class="flex gap-4">
-                <button class="flex-1 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700">
-                    Confirm
-                </button>
-
-                <button id="closeModal"
-                        class="flex-1 bg-gray-300 py-2 rounded-lg hover:bg-gray-400">
-                    Cancel
-                </button>
+                <button type="submit" class="flex-1 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700">Submit Review</button>
+                <button type="button" onclick="closeReviewSubmitModal()" class="flex-1 bg-gray-300 py-2 rounded-lg hover:bg-gray-400">Cancel</button>
             </div>
-        </div>
+        </form>
     </div>
+</div>
 
-    <script>
-        /* =========================
-           MODAL BEHAVIOR ONLY
-        ========================= */
+<script src="../js/app.js"></script>
+<script>
 
-        const modal = document.getElementById('bookingModal');
-        const modalText = document.getElementById('modalSlotText');
-        const closeBtn = document.getElementById('closeModal');
 
-        document.querySelectorAll('.slot').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const day = btn.dataset.day;
-                const time = btn.dataset.time;
+    function openBookingModal() {
+        document.getElementById('bookingModal').classList.remove('hidden');
+    }
 
-                modalText.textContent = `${day} • ${time}`;
-                modal.classList.remove('hidden');
-            });
+    function closeBookingModal() {
+        document.getElementById('bookingModal').classList.add('hidden');
+    }
+
+    function openReviewSubmitModal() {
+        document.getElementById('reviewCoachId').value = coach.id;
+        document.getElementById('reviewSubmitModal').classList.remove('hidden');
+    }
+
+    function closeReviewSubmitModal() {
+        document.getElementById('reviewSubmitModal').classList.add('hidden');
+    }
+
+    const reviewTextarea = document.querySelector('#reviewSubmitModal textarea[name="avis"]');
+    if (reviewTextarea) {
+        reviewTextarea.addEventListener('input', function() {
+            document.getElementById('reviewCharCount').textContent = this.value.length;
         });
-
-        closeBtn.addEventListener('click', () => {
-            modal.classList.add('hidden');
-        });
-
-        // Optional: click outside modal closes it
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.classList.add('hidden');
-            }
-        });
-    </script>
-
-    <!-- Review submission modal -->
-    <div id="reviewSubmitModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-lg p-8 max-w-md w-full">
-            <h3 class="text-2xl font-bold mb-4">Leave a Review</h3>
-            <form method="POST" action="/avis/create.php">
-                <input type="hidden" name="coach_id" id="reviewCoachId">
-                <input type="hidden" name="reservation_id" value="">
-
-                <div class="mb-4">
-                    <label class="block font-medium mb-2">Your Review (max 90 characters)</label>
-                    <textarea name="avis" maxlength="90" rows="3" required class="w-full px-3 py-2 border rounded-lg"></textarea>
-                    <div class="text-sm text-gray-500 mt-1">Character count: <span id="reviewCharCount">0</span>/90</div>
-                </div>
-
-                <div class="flex gap-4">
-                    <button type="submit" class="flex-1 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700">Submit Review</button>
-                    <button type="button" onclick="closeReviewSubmitModal()" class="flex-1 bg-gray-300 py-2 rounded-lg hover:bg-gray-400">Cancel</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <script src="../js/app.js"></script>
-    <script>
+    }
 
 
-                function openBookingModal() {
-            document.getElementById('bookingModal').classList.remove('hidden');
-        }
-
-        function closeBookingModal() {
-            document.getElementById('bookingModal').classList.add('hidden');
-        }
-
-        function openReviewSubmitModal() {
-            document.getElementById('reviewCoachId').value = coach.id;
-            document.getElementById('reviewSubmitModal').classList.remove('hidden');
-        }
-
-        function closeReviewSubmitModal() {
-            document.getElementById('reviewSubmitModal').classList.add('hidden');
-        }
-
-        const reviewTextarea = document.querySelector('#reviewSubmitModal textarea[name="avis"]');
-        if (reviewTextarea) {
-            reviewTextarea.addEventListener('input', function() {
-                document.getElementById('reviewCharCount').textContent = this.value.length;
-            });
-        }
-
-
-    </script>
+</script>
 </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coach Profile - CoachPro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
 </html>
