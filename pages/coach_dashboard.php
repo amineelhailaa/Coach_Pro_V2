@@ -26,6 +26,19 @@ try {
         $coachName = $sql->getUserNameById($id);
         $seance = new Seance($coachName->getName(),$_POST['date_seance'],$_POST['start'],$_POST['duree'],'open');
         $sql->createSeance($seance,$id);
+
+        if(isset($_POST['action'])){
+            $seanceID = $_POST['revID'];
+            $sql->updateSeanceStatus($seanceID,"reserved");
+            $sql->updateReservationStatus('confirmed',$seanceID);
+
+
+
+
+
+        }
+
+
     }
 }catch (Throwable $ER){
     echo $ER->getMessage();
@@ -123,7 +136,36 @@ try {
     <div id="reservationsTab" class="tab-content hidden">
         <div class="bg-white p-6 rounded-lg shadow mb-6">
             <h2 class="text-xl font-bold mb-4">Pending Requests</h2>
-            <div id="pendingReservations" class="space-y-4"></div>
+            <div id="pendingReservations" class="space-y-4">
+
+                <?php
+                $con = new connect();
+                $pdo = $con->connecting();
+                $sql = new checker($pdo);
+                $sets = $sql->getReservationC($_SESSION['id']);
+
+                foreach ($sets as $set):
+                ?>
+
+                <div class="flex items-center justify-between p-4 border rounded-lg"> <div class="flex items-center gap-4">
+                        <img src="" alt="" class="w-12 h-12 rounded-full">
+                        <div>
+                            <div class="font-medium"><?= $set['user']->getName() ?></div>
+                            <div class="text-sm text-gray-600"><?= $set['seance']->getDate() ?></div>
+                        </div>
+                    </div>
+                    <div >
+                        <form method="post" class="flex gap-2">
+                            <input type="hidden" value="<?= $set['reservation']->getSeanceId()?>" name="revID">
+                        <button type="submit" value="accept" name="action" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">Accept</button>
+                        <button type="submit" value="decline" name="action" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">Refuse</button>
+                        </form>
+                    </div></div>
+
+                <?php
+                endforeach;
+                ?>
+            </div>
         </div>
 
         <div class="bg-white p-6 rounded-lg shadow">
@@ -351,22 +393,7 @@ try {
 <script src="../js/app.js"></script>
 <script>
     // Mock data
-    const pendingReservations = [
-        {
-            id: 1,
-            client: 'Alice Brown',
-            client_photo: '/placeholder.svg?height=40&width=40',
-            start_date: '2024-02-15 10:00',
-            duree: 60
-        },
-        {
-            id: 2,
-            client: 'Bob Wilson',
-            client_photo: '/placeholder.svg?height=40&width=40',
-            start_date: '2024-02-16 14:00',
-            duree: 90
-        }
-    ];
+    const pendingReservations = []
 
     const confirmedReservations = [
         {
@@ -408,7 +435,7 @@ try {
         const div = document.createElement('div');
         div.className = 'flex items-center justify-between p-4 border rounded-lg';
         div.innerHTML = `
-                <div class="flex items-center gap-4">
+               <div class="flex items-center justify-between p-4 border rounded-lg"> <div class="flex items-center gap-4">
                     <img src="${res.client_photo}" alt="${res.client}" class="w-12 h-12 rounded-full">
                     <div>
                         <div class="font-medium">${res.client}</div>
@@ -418,7 +445,7 @@ try {
                 <div class="flex gap-2">
                     <button onclick="acceptReservation(${res.id})" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">Accept</button>
                     <button onclick="refuseReservation(${res.id})" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">Refuse</button>
-                </div>
+                </div></div>
             `;
         pendingContainer.appendChild(div);
     });

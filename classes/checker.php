@@ -97,18 +97,14 @@ class checker
         public function getReservationS($id) //need to show seances per coach not all seances mate ????
     {
         $query = "select * from reservation join users on user_id = sportif_id where sportif_id = $id ";
-        $statement = $this->pdo->prepare($query);
-        $statement->execute();
-        $array=[];
-        while($row = $statement->fetch(2)){
-            $reservation = new reservation($row['coach_id'],$row['sportif_id'],$row['seance_id'],$row['status'],$row['date_reserved']);
-            $user = new utilisateur($row['nom'],$row['phone'],null,null);
-            $array[]=[
-                'reservation'=>$reservation,
-                'user'=>$user
-            ];
-        }
-        return $array;
+        return $this->extracted($query);
+
+    }
+
+    public function getReservationC($id) //need to show seances per coach not all seances mate ????
+    {
+        $query = "select * from reservation join users on user_id = sportif_id where coach_id = $id and reservation.status='in progress' ";
+        return $this->extracted($query);
 
     }
 
@@ -143,6 +139,18 @@ class checker
         $statement = $this->pdo->prepare($query);
         return $statement->execute(array($status,$id));
     }
+
+    public function updateReservationStatus($status,$id)
+    {
+        $query = "update reservation join seances on reservation.seance_id=seances.id set reservation.status = ?  where seances.id=?";
+        $statement = $this->pdo->prepare($query);
+        return $statement->execute(array($status,$id));
+    }
+
+
+
+
+
     public function createReservation($coach_id,$user_id,$seance_id)
     {
         $statement= $this->pdo->prepare("insert into reservation  (coach_id,sportif_id,seance_id,status) values (?,?,?,?)");
@@ -183,4 +191,29 @@ class checker
         }
         return $array;
     }
+
+    /**
+     * @param string $query
+     * @return array
+     */
+    public function extracted(string $query): array
+    {
+        $statement = $this->pdo->prepare($query);
+        $statement->execute();
+        $array = [];
+        while ($row = $statement->fetch(2)) {
+            $reservation = new reservation($row['id'], $row['coach_id'], $row['sportif_id'], $row['seance_id'], $row['status'], $row['date_reserved']);
+            $user = new utilisateur($row['nom'], $row['phone'], null, null);
+            $statement->closeCursor();
+            $seance = $this->getSeanceById($row['seance_id']);
+            $array[] = [
+                'reservation' => $reservation,
+                'user' => $user,
+                'seance' => $seance
+            ];
+        }
+        return $array;
+    }
 }
+
+//for testing functions

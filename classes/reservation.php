@@ -3,14 +3,16 @@
 
 
 class reservation {
+    private $reservation_id;
     private $coach_id;
     private $sportif_id;
     private $seance_id;
     private $status;
     private $date_reserved;
 
-    public function __construct($coachid,$sportifid,$seanceid,$status,$date_reserved)
+    public function __construct($reservation_id,$coachid,$sportifid,$seanceid,$status,$date_reserved)
     {
+        $this->reservation_id = $reservation_id;
         $this->coach_id = $coachid;
         $this->sportif_id = $sportifid;
         $this->seance_id = $seanceid;
@@ -96,6 +98,22 @@ class reservation {
     public function setSeanceId($seance_id): void
     {
         $this->seance_id = $seance_id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getReservationId()
+    {
+        return $this->reservation_id;
+    }
+
+    /**
+     * @param mixed $reservation_id
+     */
+    public function setReservationId($reservation_id): void
+    {
+        $this->reservation_id = $reservation_id;
     }
 }
 
