@@ -100,10 +100,7 @@ $user = $sql->getUserNameById($_SESSION['id']);
                     <span class="font-medium">Completed Sessions</span>
                     <span class="text-2xl font-bold text-gray-600"><?= $sql->doneSession($_SESSION['id']) ?></span>
                 </div>
-                <div class="flex justify-between items-center p-4 bg-yellow-50 rounded-lg">
-                    <span class="font-medium">Pending Reviews</span>
-                    <span class="text-2xl font-bold text-yellow-600">2</span>
-                </div>
+
             </div>
         </div>
 
@@ -118,12 +115,47 @@ $user = $sql->getUserNameById($_SESSION['id']);
                 <tr>
                     <th class="px-4 py-3 text-left">Coach</th>
                     <th class="px-4 py-3 text-left">Date & Time</th>
-                    <th class="px-4 py-3 text-left">Duration</th>
                     <th class="px-4 py-3 text-left">Status</th>
-                    <th class="px-4 py-3 text-left">Actions</th>
                 </tr>
                 </thead>
-                <tbody id="reservationsTable"></tbody>
+                <tbody id="reservationsTable">
+
+
+
+
+
+<?php
+$sets = $sql->getReservationS($_SESSION['id']);
+foreach ($sets as $set):
+?>
+                <tr class="border-b hover:bg-gray-50" ><td class="px-4 py-3">
+                        <div class="flex items-center gap-2">
+                            <img src="<?= $set['user']->getName() ?>" alt="<?= $set['user']->getName() ?>" class="w-10 h-10 rounded-full">
+                            <span><?= $set['user']->getName() ?></span>
+                        </div>
+                    </td>
+                    <td class="px-4 py-3"><?= $set['reservation']->getDateReserved() ?></td>
+                    <td class="px-4 py-3">
+                        <span class="px-2 py-1 rounded ${statusColors[res.status]}"><?= $set['reservation']->getStatus() ?></span>
+                    </td>
+                    </tr>
+
+
+<?php
+endforeach;
+?>
+
+
+
+
+
+
+
+
+
+
+
+                </tbody>
             </table>
         </div>
     </div>
@@ -184,11 +216,7 @@ $user = $sql->getUserNameById($_SESSION['id']);
 <script src="../js/app.js"></script>
 <script>
     // Mock reservations data
-    const reservations = [
-        { id: 1, coach: 'John Smith', coach_photo: '/placeholder.svg?height=40&width=40', start_date: '2024-02-15 10:00', duree: 60, status: 'confirmed' },
-        { id: 2, coach: 'Sarah Johnson', coach_photo: '/placeholder.svg?height=40&width=40', start_date: '2024-02-20 14:00', duree: 90, status: 'in progress' },
-        { id: 3, coach: 'Mike Davis', coach_photo: '/placeholder.svg?height=40&width=40', start_date: '2024-01-10 09:00', duree: 60, status: 'confirmed' }
-    ];
+    const reservations = [];
 
     const statusColors = {
         'in progress': 'bg-yellow-100 text-yellow-800',
@@ -205,7 +233,7 @@ $user = $sql->getUserNameById($_SESSION['id']);
         const isPast = new Date(res.start_date) < new Date();
 
         tr.innerHTML = `
-                <td class="px-4 py-3">
+                <tr class="border-b hover:bg-gray-50" ><td class="px-4 py-3">
                     <div class="flex items-center gap-2">
                         <img src="${res.coach_photo}" alt="${res.coach}" class="w-10 h-10 rounded-full">
                         <span>${res.coach}</span>
@@ -226,7 +254,7 @@ $user = $sql->getUserNameById($_SESSION['id']);
                             <button onclick="openReviewModal(${res.id})" class="text-green-600 hover:underline">Review</button>
                         ` : ''}
                     </div>
-                </td>
+                </td></tr>
             `;
         tbody.appendChild(tr);
     });

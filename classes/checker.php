@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . "/utilisateur.php"; //dir means when another file require this class ( checker ) it will access it with the path relatif to checker file not to the file usin checker class
+require_once __DIR__."/reservation.php";
 
 class checker
 {
@@ -48,7 +49,7 @@ class checker
 
     public function upcomingSession($userId)
     {
-        $query = "select count(*) from users u  inner join reservation r on u.user_id=r.id where u.user_id=? and  r.date_reserved > current_date ";
+        $query = "select count(*) from sportifs s join reservation r on s.sportif_id=r.sportif_id where r.sportif_id=? and  r.date_reserved >= curdate();";
         $stmt = $this->pdo->prepare($query);
         $stmt->execute(array($userId));
         $row = $stmt->fetch(2);
@@ -56,7 +57,7 @@ class checker
     }
     public function doneSession($userId)
     {
-        $query = "select count(*) from users u  inner join reservation r on u.user_id=r.id where u.user_id=? and  r.date_reserved < current_date ";
+        $query = "select count(*) from sportifs s join reservation r on s.sportif_id=r.sportif_id where r.sportif_id=? and  r.date_reserved < curdate();";
         $stmt = $this->pdo->prepare($query);
         $stmt->execute(array($userId));
         $row = $stmt->fetch(2);
@@ -90,6 +91,28 @@ class checker
         }
 
     }
+
+
+
+        public function getReservationS($id) //need to show seances per coach not all seances mate ????
+    {
+        $query = "select * from reservation join users on user_id = sportif_id where sportif_id = $id ";
+        $statement = $this->pdo->prepare($query);
+        $statement->execute();
+        $array=[];
+        while($row = $statement->fetch(2)){
+            $reservation = new reservation($row['coach_id'],$row['sportif_id'],$row['seance_id'],$row['status'],$row['date_reserved']);
+            $user = new utilisateur($row['nom'],$row['phone'],null,null);
+            $array[]=[
+                'reservation'=>$reservation,
+                'user'=>$user
+            ];
+        }
+        return $array;
+
+    }
+
+
 
 
     public function getSeances($id) //need to show seances per coach not all seances mate ????
