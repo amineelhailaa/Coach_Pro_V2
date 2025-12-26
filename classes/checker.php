@@ -50,7 +50,7 @@ class checker
 
     public function upcomingSession($userId)
     {
-        $query = "select count(*) from sportifs s join reservation r on s.sportif_id=r.sportif_id where r.sportif_id=? and  r.date_reserved >= curdate();";
+        $query = "select count(*) from sportifs s join reservation r on s.sportif_id=r.sportif_id where r.sportif_id=? and r.status='confirmed' and  r.date_reserved >= curdate();";
         $stmt = $this->pdo->prepare($query);
         $stmt->execute(array($userId));
         $row = $stmt->fetch(2);
@@ -58,7 +58,7 @@ class checker
     }
     public function doneSession($userId)
     {
-        $query = "select count(*) from sportifs s join reservation r on s.sportif_id=r.sportif_id where r.sportif_id=? and  r.date_reserved < curdate();";
+        $query = "select count(*) from sportifs s join reservation r on s.sportif_id=r.sportif_id where r.sportif_id=? and r.status ='confirmed' and  r.date_reserved < curdate();";
         $stmt = $this->pdo->prepare($query);
         $stmt->execute(array($userId));
         $row = $stmt->fetch(2);
@@ -104,7 +104,7 @@ class checker
 
 
 
-        public function getReservationS($id) //need to show seances per coach not all seances mate ????
+        public function getReservationS($id) //need to show seances per sportif not all seances mate ????
     {
         $query = "select * from reservation join users on user_id = sportif_id where sportif_id = $id ";
         return $this->extracted($query);
@@ -143,7 +143,7 @@ class checker
 
     public function getReservationCount($coachId)
     {
-        $query = "select count(*),(select count(*) from reservation where status='in progress' and coach_id = ? ) as in_progress ,(select count(*) from seances where status='reserved' and date_seance=curdate() and coach_id=? ) as confirmed_today from reservation where coach_id=? ";
+        $query = "select count(*),(select count(*) from reservation where status='in progress' and coach_id = ? ) as in_progress ,(select count(*) from seances s join reservation r on  r.seance_id = s.id where r.status='confirmed' and date_reserved=curdate() and r.coach_id=? ) as confirmed_today from reservation where coach_id=? and status='confirmed'";
         $statement = $this->pdo->prepare($query);
          $statement->execute(array($coachId,$coachId,$coachId));
           return $statement->fetch(2);
@@ -233,7 +233,6 @@ class checker
         while ($row = $statement->fetch(2)) {
             $reservation = new reservation($row['id'], $row['coach_id'], $row['sportif_id'], $row['seance_id'], $row['status'], $row['date_reserved']);
             $user = new utilisateur($row['nom'], $row['phone'], null, null);
-            $statement->closeCursor();
             $seance = $this->getSeanceById($row['seance_id']);
             $array[] = [
                 'reservation' => $reservation,
@@ -241,6 +240,7 @@ class checker
                 'seance' => $seance
             ];
         }
+        $statement->closeCursor();
         return $array;
     }
 }

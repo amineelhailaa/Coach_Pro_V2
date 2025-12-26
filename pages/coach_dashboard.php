@@ -276,7 +276,7 @@ try {
                     $con = new connect();
                     $pdo = $con->connecting();
                     $forS = new checker($pdo);
-                    $seances = $forS->getSeances($_SESSION['id']);
+                    $seances = $forS->getSeancesByStatut($_SESSION['id'],"open");
                     foreach ($seances as $seance){
                         ?>
                         <tr class="border-b hover:bg-gray-50"><td class="px-4 py-3"><?= $seance->getDate() ?></td>

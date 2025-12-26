@@ -19,7 +19,7 @@ try{
         $sql = new checker($pdo);
         $seance = $sql->getSeanceById($seance_id);
         $seance->setStatus("reserved");
-        $sql->updateSeanceStatus($seance_id,"reserved");
+//        $sql->updateSeanceStatus($seance_id,"reserved");
         $sql->createReservation($coach_id,$user_id,$seance_id);
         header("location: ../pages/sportif_dashboard.php");
     }
