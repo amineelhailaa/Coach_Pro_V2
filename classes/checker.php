@@ -130,6 +130,19 @@ class checker
         return $array;
 
     }
+
+    public function getReservationCount($coachId)
+    {
+        $query = "select count(*),(select count(*) from reservation where status='in progress' and coach_id = ? ) as in_progress ,(select count(*) from seances where status='reserved' and date_seance=curdate() and coach_id=? ) as confirmed_today from reservation where coach_id=? ";
+        $statement = $this->pdo->prepare($query);
+         $statement->execute(array($coachId,$coachId,$coachId));
+          return $statement->fetch(2);
+
+    }
+
+
+
+
     public function getSeanceById($id) //id of the seance
     {
         $query = "select * from seances where id=?";
@@ -223,3 +236,9 @@ class checker
 }
 
 //for testing functions
+
+//
+//$con = new connect();
+//$pdo = $con->connecting();
+//$sql = new checker($pdo);
+//echo $sql->getReservationCount(19)['count(*)'];

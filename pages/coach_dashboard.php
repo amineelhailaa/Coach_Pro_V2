@@ -115,11 +115,20 @@ try {
         <div class="grid md:grid-cols-4 gap-6 mb-6">
             <div class="bg-white p-6 rounded-lg shadow">
                 <div class="text-gray-600 mb-2">Pending Requests</div>
-                <div class="text-3xl font-bold text-yellow-600">5</div>
+                <div class="text-3xl font-bold text-yellow-600">
+                    <?php
+                    $con = new connect();
+                    $pdo = $con->connecting();
+                    $sql = new checker($pdo);
+                    $data = $sql->getReservationCount($_SESSION['id']);
+                    echo $data['in_progress'];
+
+
+                    ?></div>
             </div>
             <div class="bg-white p-6 rounded-lg shadow">
                 <div class="text-gray-600 mb-2">Confirmed Today</div>
-                <div class="text-3xl font-bold text-green-600">2</div>
+                <div class="text-3xl font-bold text-green-600"><?= $data['confirmed_today'] ?></div>
             </div>
 <!--            <div class="bg-white p-6 rounded-lg shadow">-->
 <!--                <div class="text-gray-600 mb-2">Confirmed Tomorrow</div>-->
@@ -127,7 +136,7 @@ try {
 <!--            </div>-->
             <div class="bg-white p-6 rounded-lg shadow">
                 <div class="text-gray-600 mb-2">Total Sessions</div>
-                <div class="text-3xl font-bold">47</div>
+                <div class="text-3xl font-bold"><?= $data['count(*)'] ?></div>
             </div>
         </div>
 
@@ -151,11 +160,8 @@ try {
             <div id="pendingReservations" class="space-y-4">
 
                 <?php
-                $con = new connect();
-                $pdo = $con->connecting();
-                $sql = new checker($pdo);
-                $sets = $sql->getReservationC($_SESSION['id']);
 
+                $sets = $sql->getReservationC($_SESSION['id']);
                 foreach ($sets as $set):
                 ?>
 
