@@ -109,7 +109,12 @@ class checker
     }
 
 
-
+    public function deleteSeanceById($id)
+    {
+        $query = "delete from seances where id=?";
+        $statement = $this->pdo->prepare($query);
+       return $statement->execute(array($id));
+    }
 
     public function getSeances($id) //need to show seances per coach not all seances mate ????
     {
@@ -119,6 +124,7 @@ class checker
         $array=[];
         while($row = $statement->fetch(2)){
             $seance = new Seance($row['coach_id'],$row['date_seance'],$row['start'],$row['duree'],$row['status']);
+            $seance->setId($row['id']);
             $array[]=$seance;
         }
         return $array;

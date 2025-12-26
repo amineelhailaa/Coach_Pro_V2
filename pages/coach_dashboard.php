@@ -23,9 +23,12 @@ try {
         $con = new connect();
         $pdo = $con->connecting();
         $sql = new checker($pdo);
-        $coachName = $sql->getUserNameById($id);
-        $seance = new Seance($coachName->getName(),$_POST['date_seance'],$_POST['start'],$_POST['duree'],'open');
-        $sql->createSeance($seance,$id);
+        if(isset($_POST['start'])){
+
+            $coachName = $sql->getUserNameById($id);
+            $seance = new Seance($coachName->getName(),$_POST['date_seance'],$_POST['start'],$_POST['duree'],'open');
+            $sql->createSeance($seance,$id);
+        }
 
         if(isset($_POST['action'])){
             $seanceID = $_POST['revID'];
@@ -38,8 +41,18 @@ try {
             }
         }
 
+        if(isset($_POST['ava'])){
+            $seanceID = $_POST['seanceid'];
+            if($_POST['ava']=="delete"){
+                $sql->deleteSeanceById($seanceID);
+            }
+        }
 
+
+        header("location: coach_dashboard.php");
+        exit();
     }
+
 }catch (Throwable $ER){
     echo $ER->getMessage();
 }
@@ -208,7 +221,7 @@ try {
                     </div>
                 </div>
                 <!-- green button -->
-                <button type="submit" class="mt-4 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700">Add
+                <button type="submit"  class="mt-4 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700">Add
                     Availability
                 </button>
             </form>
@@ -237,10 +250,11 @@ try {
                         <tr class="border-b hover:bg-gray-50"><td class="px-4 py-3"><?= $seance->getDate() ?></td>
                             <td class="px-4 py-3"><?= $seance->getHeure() ?></td>
                             <td class="px-4 py-3"><?= $seance->getDuree() ?></td>
-                            <td class="px-4 py-3">
+                            <td ><form class="px-4 py-3" method="post">
+                                    <input name="seanceid" value="<?= $seance->getId() ?>" type="hidden">
                                 <button onclick="editAvailability(${slot.id}, '${slot.day}', '${slot.start}', '${slot.end}')" class="text-green-600 hover:underline mr-3">Edit</button>
-                                <button onclick="deleteAvailability(${slot.id})" class="text-red-600 hover:underline">Delete</button>
-                            </td></tr>
+                                <button type="submit" name="ava" value="delete" class="text-red-600 hover:underline">Delete</button>
+                                </form></td></tr>
                     <?php
                     }
                     ?>
