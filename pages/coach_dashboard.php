@@ -29,13 +29,13 @@ try {
 
         if(isset($_POST['action'])){
             $seanceID = $_POST['revID'];
-            $sql->updateSeanceStatus($seanceID,"reserved");
-            $sql->updateReservationStatus('confirmed',$seanceID);
-
-
-
-
-
+            if($_POST['action']=="accept"){
+                $sql->updateSeanceStatus($seanceID,"reserved");
+                $sql->updateReservationStatus('confirmed',$seanceID);
+            }
+            elseif ($_POST['action']=="decline"){
+                $sql->updateReservationStatus('declined',$seanceID);
+            }
         }
 
 
@@ -94,7 +94,6 @@ try {
                 Availability
             </button>
             <button onclick="showTab('profile')" class="tab-btn px-6 py-3 font-medium hover:bg-gray-50">Profile</button>
-            <button onclick="showTab('reviews')" class="tab-btn px-6 py-3 font-medium hover:bg-gray-50">Reviews</button>
         </div>
     </div>
 
@@ -109,27 +108,27 @@ try {
                 <div class="text-gray-600 mb-2">Confirmed Today</div>
                 <div class="text-3xl font-bold text-green-600">2</div>
             </div>
-            <div class="bg-white p-6 rounded-lg shadow">
-                <div class="text-gray-600 mb-2">Confirmed Tomorrow</div>
-                <div class="text-3xl font-bold text-green-600">3</div>
-            </div>
+<!--            <div class="bg-white p-6 rounded-lg shadow">-->
+<!--                <div class="text-gray-600 mb-2">Confirmed Tomorrow</div>-->
+<!--                <div class="text-3xl font-bold text-green-600">3</div>-->
+<!--            </div>-->
             <div class="bg-white p-6 rounded-lg shadow">
                 <div class="text-gray-600 mb-2">Total Sessions</div>
                 <div class="text-3xl font-bold">47</div>
             </div>
         </div>
 
-        <div class="bg-white p-6 rounded-lg shadow">
-            <h2 class="text-xl font-bold mb-4">Next Session</h2>
-            <div class="flex items-center gap-4">
-                <img src="/placeholder.svg?height=60&width=60" alt="Client" class="w-16 h-16 rounded-full">
-                <div>
-                    <div class="font-medium">Alice Brown</div>
-                    <div class="text-gray-600">Tomorrow at 10:00 AM</div>
-                    <div class="text-sm text-gray-500">Duration: 60 minutes</div>
-                </div>
-            </div>
-        </div>
+<!--        <div class="bg-white p-6 rounded-lg shadow">-->
+<!--            <h2 class="text-xl font-bold mb-4">Next Session</h2>-->
+<!--            <div class="flex items-center gap-4">-->
+<!--                <img src="/placeholder.svg?height=60&width=60" alt="Client" class="w-16 h-16 rounded-full">-->
+<!--                <div>-->
+<!--                    <div class="font-medium">Alice Brown</div>-->
+<!--                    <div class="text-gray-600">Tomorrow at 10:00 AM</div>-->
+<!--                    <div class="text-sm text-gray-500">Duration: 60 minutes</div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
     </div>
 
     <!-- Reservations Tab -->
@@ -396,13 +395,6 @@ try {
     const pendingReservations = []
 
     const confirmedReservations = [
-        {
-            id: 3,
-            client: 'Carol Davis',
-            client_photo: '/placeholder.svg?height=40&width=40',
-            start_date: '2024-02-20 09:00',
-            duree: 60
-        }
     ];
 
     const availabilitySlots = [
