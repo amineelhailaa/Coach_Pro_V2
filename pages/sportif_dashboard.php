@@ -18,7 +18,7 @@ if(!isset($_SESSION['id'])){
     exit();
 }
 if($_SESSION['role']!='sportif'){
-    header("location: coach-dashboard.php");
+    header("location: coach_dashboard.php");
     exit();
 }
 //require_once "collect_data/client.php"; c pour le profile du client a regler tout a lheure
@@ -41,11 +41,11 @@ if($_SESSION['role']!='sportif'){
 <nav class="bg-white shadow">
     <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
         <!-- Logo links to index.php, green theme -->
-        <a href="index.php" class="text-2xl font-bold text-green-600">CoachPro</a>
+        <a href="login.php" class="text-2xl font-bold text-green-600">CoachPro</a>
         <div class="flex gap-6">
-            <a href="index.php" class="hover:text-green-600">Home</a>
+            <a href="login.php" class="hover:text-green-600">Home</a>
             <a href="coaches.php" class="hover:text-green-600">Find Coaches</a>
-            <a href="client-dashboard.php" class="font-medium text-green-600">Dashboard</a>
+            <a href="sportif_dashboard.php" class="font-medium text-green-600">Dashboard</a>
         </div>
     </div>
 </nav>

@@ -13,7 +13,7 @@ if (!isset($_SESSION['id'])) {
     exit();
 }
 if ($_SESSION['role'] != 'coach') {
-    header("location: client-dashboard.php");
+    header("location: sportif-dashboard.php");
     exit();
 }
 
@@ -83,10 +83,10 @@ try {
 <nav class="bg-white shadow">
     <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
         <!-- Logo links to index.php, green theme -->
-        <a href="index.php" class="text-2xl font-bold text-green-600">CoachPro</a>
+        <a href="login.php" class="text-2xl font-bold text-green-600">CoachPro</a>
         <div class="flex gap-6">
-            <a href="index.php" class="hover:text-green-600">Home</a>
-            <a href="coach-dashboard.php" class="font-medium text-green-600">Dashboard</a>
+            <a href="login.php" class="hover:text-green-600">Home</a>
+            <a href="coach_dashboard.php" class="font-medium text-green-600">Dashboard</a>
         </div>
     </div>
 </nav>
@@ -188,7 +188,25 @@ try {
 
         <div class="bg-white p-6 rounded-lg shadow">
             <h2 class="text-xl font-bold mb-4">Confirmed Sessions</h2>
-            <div id="confirmedReservations" class="space-y-4"></div>
+            <div id="confirmedReservations" class="space-y-4">
+
+                <?php
+                $array = $sql->getSeancesByStatut($_SESSION['id'],'reserved');
+                foreach ($array as $seance):
+                ?>
+                <div class="flex items-center gap-4 p-4 border rounded-lg"><img src="" alt="image" class="w-12 h-12 rounded-full">
+                    <div>
+                        <div class="font-medium"><?=$seance->getStatus()?></div>
+                        <div class="text-sm text-gray-600"><?= $seance->getDate()." • ".$seance->getDuree()?> min</div>
+                    </div></div>
+
+                <?php
+                endforeach;
+                ?>
+
+
+
+            </div>
         </div>
     </div>
 
@@ -414,8 +432,9 @@ try {
     // Mock data
     const pendingReservations = []
 
-    const confirmedReservations = [
-    ];
+
+
+
 
     const availabilitySlots = [
         {id: 1, day: 'Mon', start: '09:00', end: '17:00'},
@@ -464,18 +483,18 @@ try {
 
     // Render confirmed reservations
     const confirmedContainer = document.getElementById('confirmedReservations');
-    confirmedReservations.forEach(res => {
-        const div = document.createElement('div');
-        div.className = 'flex items-center gap-4 p-4 border rounded-lg';
-        div.innerHTML = `
-                <img src="${res.client_photo}" alt="${res.client}" class="w-12 h-12 rounded-full">
-                <div>
-                    <div class="font-medium">${res.client}</div>
-                    <div class="text-sm text-gray-600">${res.start_date} • ${res.duree} min</div>
-                </div>
-            `;
-        confirmedContainer.appendChild(div);
-    });
+    // confirmedReservations.forEach(res => {
+    //     const div = document.createElement('div');
+    //     div.className = 'flex items-center gap-4 p-4 border rounded-lg';
+    //     div.innerHTML = `
+    //          <div class="flex items-center gap-4 p-4 border rounded-lg"   ><img src="${res.client_photo}" alt="${res.client}" class="w-12 h-12 rounded-full">
+    //             <div>
+    //                 <div class="font-medium">${res.client}</div>
+    //                 <div class="text-sm text-gray-600">${res.start_date} • ${res.duree} min</div>
+    //             </div></div>
+    //         `;
+    //     confirmedContainer.appendChild(div);
+    // });
 
     // Render availability table - green links
     // const availabilityTable = document.getElementById('availabilityTable');
