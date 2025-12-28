@@ -17,7 +17,8 @@ select c.user_id,count(*) as seances from coachs c left join seances s on c.user
 
 
 
-challenge 2;
+challenge 3;
 
+select nom,prenom,u.id ,s.date_seance,s2.date_seance as date2, s.heure,s2.heure as heure2  from users u join coachs c on c.user_id = u.id join seances s on s.id=c.user_id join seances s2 on s.date_seance=s2.date_seance;
 
 
