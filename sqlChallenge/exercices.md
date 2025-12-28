@@ -32,3 +32,8 @@ challenge 7 :
 select floor(hour(heure)) as tranch,count(id) from seances group by tranch order by count(id) desc;
 
 
+challenge 8:
+
+select u.nom, u.prenom ,count(r.id) as count  from users u left join sportifs s on u.id=s.user_id left join reservations r on r.sportif_id=u.id group by u.id union all select
+nom,prenom,count(s.id) as count from users u join coachs c on u.id=c.user_id left join seances s on s.coach_id=u.id group by u.id order by count desc;
+
