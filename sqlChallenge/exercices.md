@@ -22,6 +22,12 @@ challenge 3;
 select  nom,prenom, s.id,s2.id ,s.date_seance,s2.date_seance as date2, s.heure,s2.heure as heure2  from
 users u join coachs c on c.user_id = u.id join seances s on s.coach_id=c.user_id join seances s2 on s.date_seance=s2.date_seance where s.id <> s2.id and (s.heure+s.duree)>s2.heure;
 
+challenge 5;
+
+with data as (select nom,prenom,u.id,discipline,count(s.id) as ana  from users u join coachs c on c.user_id = u.id left join seances s on s.coach_id=c.user_id and  s.statut='reservee' group by u.id) select *,rank() over (partition by discipline order by ana) from data order by discipline;
+
+
+
 
 
 
