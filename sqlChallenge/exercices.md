@@ -28,6 +28,7 @@ with data as (select nom,prenom,u.id,discipline,count(s.id) as ana  from users u
 
 
 
-
+challenge 7 :
+select floor(hour(heure)) as tranch,count(id) from seances group by tranch order by count(id) desc;
 
 
